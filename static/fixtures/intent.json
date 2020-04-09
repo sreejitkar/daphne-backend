@@ -1,0 +1,22 @@
+{
+    "intents": [
+        {
+            "tag": "inte",
+            "responses": [
+                "No, it won't"
+            ]
+        },
+        {
+            "tag": "lok",
+            "responses": [
+                "this lockdown will continue till 14th April"
+            ]
+        },
+        {
+            "tag": "pre",
+            "responses": [
+                "you should wash your hand,and social distancing"
+            ]
+        }
+    ]
+}

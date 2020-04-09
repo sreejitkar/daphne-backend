@@ -18,3 +18,27 @@ class UserDetail(models.Model):
 
     def __str__(self):
         return self.fname
+
+class Shop(models.Model):
+    MEDICINE = 1
+    GROCERY = 2
+    DAIRY = 3
+    OTHER=4
+    categories=(
+        (MEDICINE,('Medicines')),
+        (GROCERY,('Groceries')),
+        (DAIRY,('Dairy')),
+        (OTHER,('Other Needs'))
+    )
+    shopid=models.AutoField(primary_key=True)
+    shop_name=models.CharField(max_length=30,default="")
+    shop_owner=models.CharField(max_length=30)
+    shop_address=models.CharField(max_length=140)
+    shop_category=models.PositiveSmallIntegerField(choices=categories,default=OTHER)
+
+class Slots(models.Model):
+    shopid=models.ForeignKey(Shop,on_delete=models.CASCADE)
+    slot_date=models.DateField()
+    slot_time=models.TimeField()
+    user_id=models.CharField(max_length=10)
+    user_phno=models.CharField(max_length=10)

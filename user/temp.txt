@@ -1,0 +1,51 @@
+def scrape_now():
+    output_json = {
+        'Status': '',
+        'Message': '',
+        'overview': {},
+        'state_wise_list': []
+    }
+    txt = get_contents()
+    # get to parsing
+    soup = BeautifulSoup(txt, 'html.parser')
+    output_json['overview'] = {
+        'active': soup.find_all('div', class_="info_label")[1].parent.find('span', class_="icount").next_element,
+        'discharged': soup.find_all('div', class_="info_label")[2].parent.find('span', class_="icount").next_element,
+        'deaths': soup.find_all('div', class_="info_label")[3].parent.find('span', class_="icount").next_element,
+        'migrated': soup.find_all('div', class_="info_label")[4].parent.find('span', class_="icount").next_element,
+    }
+    tables = soup.find_all('tbody')
+    if len(tables) > 0:
+        table = tables[9]
+        first_row = False
+        for tr in list(table.children):
+            if isinstance(tr, bs4.element.Tag):
+                if first_row:
+                    first_row = False
+                    continue
+                tds = list(tr.children)
+                if len(tds) > 1:
+                    pass
+                else:
+                    continue
+                if "Total number of confirmed cases in India" == tds[1].get_text():
+                    continue
+                state = (tds[3]).get_text()
+                state = state.replace("Union Territory of ", "")
+                state = state.strip()
+
+                data = {}
+                data["state_name"] = state
+                data["confirmed"] = int((tds[5]).get_text())
+                data["foreign"] = int((tds[7]).get_text())
+                data["cured"] = int((tds[9]).get_text())
+                data["deaths"] = int((tds[11]).get_text())
+                output_json['state_wise_list'].append(data)
+        output_json['Status'] = 'Success'
+        output_json['Message'] = 'Data fetched successfully.'
+    else:
+        message = message + " ERROR: No Table found \n"
+        print("No Table found")
+        output_json['Status'] = 'Failure'
+        output_json['Message'] = 'No data present.'
+    return output_json

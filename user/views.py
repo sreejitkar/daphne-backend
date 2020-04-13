@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.db import IntegrityError
 # Create your views here.
-
+import json
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
@@ -145,46 +145,55 @@ def scrape_now():
         'state_wise_list': []
     }
     txt = get_contents()
-    # get to parsing
     soup = BeautifulSoup(txt, 'html.parser')
+    overalldata = soup.find_all('div', {'class': 'site-stats-count'})
+    for d in overalldata:
+        a = d.find(class_="bg-blue").text.splitlines()[2]
+        b = d.find(class_="bg-green").text.splitlines()[2]
+        c = d.find(class_="bg-red").text.splitlines()[2]
+        d = d.find(class_="bg-orange").text.splitlines()[2]
+    
     output_json['overview'] = {
-        'active': soup.find_all('div', class_="info_label")[1].parent.find('span', class_="icount").next_element,
-        'discharged': soup.find_all('div', class_="info_label")[2].parent.find('span', class_="icount").next_element,
-        'deaths': soup.find_all('div', class_="info_label")[3].parent.find('span', class_="icount").next_element,
-        'migrated': soup.find_all('div', class_="info_label")[4].parent.find('span', class_="icount").next_element,
+        'active': a,
+        'discharged':b, 
+        'deaths': c,
+        'migrated':d
     }
-    tables = soup.find_all('tbody')
-    if len(tables) > 0:
-        table = tables[9]
-        first_row = False
-        for tr in list(table.children):
-            if isinstance(tr, bs4.element.Tag):
-                if first_row:
-                    first_row = False
-                    continue
-                tds = list(tr.children)
-                if len(tds) > 1:
-                    pass
-                else:
-                    continue
-                if "Total number of confirmed cases in India" == tds[1].get_text():
-                    continue
-                state = (tds[3]).get_text()
-                state = state.replace("Union Territory of ", "")
-                state = state.strip()
+    table = soup.find('table')
+    state_wise_details = {}
+    state={}
+    count = 0
+    if len(table) > 0:
+         data = []
+         for table_row in table.findAll('tr'):
+             columns = table_row.findAll('td')
+             output_row = []
+             for column in columns:
+                 output_row.append(column.text) 
+             data.append(output_row) 
 
-                data = {}
-                data["state_name"] = state
-                data["confirmed"] = int((tds[5]).get_text())
-                data["foreign"] = int((tds[7]).get_text())
-                data["cured"] = int((tds[9]).get_text())
-                data["deaths"] = int((tds[11]).get_text())
-                output_json['state_wise_list'].append(data)
-        output_json['Status'] = 'Success'
-        output_json['Message'] = 'Data fetched successfully.'
+         #Filtering out null data values of unecessary values         
+         data = list(filter(None,data))     
+                     
+         #Filtering out null data values of last value
+         data.pop(-1)
+         #Total Cases Popped out of list 
+         data.pop(-1)
+         for index, value in enumerate(data): 
+             #Initailizing the JSON output to store new STATE DETAILS in the JSON list 
+             state_wise_details = {}
+             state_wise_details["state_name"] = data[index][1]
+             state_wise_details["confirmed"] = data[index][2]
+             state_wise_details["cured"] = data[index][3]
+             state_wise_details["deaths"] = data[index][4] 
+             output_json['state_wise_list'].append(state_wise_details)
+            
+         output_json['Status'] = 'Success'
+         output_json['Message'] = 'Data fetched successfully.'  
+         return output_json
     else:
-        message = message + " ERROR: No Table found \n"
-        print("No Table found")
-        output_json['Status'] = 'Failure'
-        output_json['Message'] = 'No data present.'
+         message = message + " ERROR: No Table found \n"
+         print("No Table found")
+         output_json['Status'] = 'Failure'
+         output_json['Message'] = 'No data present.'        
     return output_json

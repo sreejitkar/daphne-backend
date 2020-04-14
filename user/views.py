@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from django.db import IntegrityError
-# Create your views here.
 import json
 from rest_framework.views import APIView
 from rest_framework import status

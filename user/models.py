@@ -37,8 +37,9 @@ class Shop(models.Model):
     shop_category=models.PositiveSmallIntegerField(choices=categories,default=OTHER)
 
 class Slots(models.Model):
+    
     shopid=models.ForeignKey(Shop,on_delete=models.CASCADE)
-    slot_date=models.DateField()
+    slot_date=models.DateField(auto_now=True)
     slot_time=models.TimeField()
-    user_id=models.CharField(max_length=10)
+    user_id=models.ForeignKey(User,on_delete=models.CASCADE)
     user_phno=models.CharField(max_length=10)

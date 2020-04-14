@@ -8,9 +8,7 @@ class UserDetailList(admin.ModelAdmin):
     list_display = [field.name for field in UserDetail._meta.get_fields()]    
 admin.site.register(UserDetail,UserDetailList)
 
-class ShopDetailsList(admin.ModelAdmin):
-    list_display=[field.name for field in Shop._meta.get_fields()]
-admin.site.register(Shop,ShopDetailsList)    
+admin.site.register(Shop)    
 
 class SlotsDetailsList(admin.ModelAdmin):
     list_display=[field.name for field in Slots._meta.get_fields()]

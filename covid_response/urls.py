@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
-from user.views import FakeNewsChatBotAPI, CovidUpdatesAPI, RegistrationAPI, LoginAPI
+from user import views
+from user.views import FakeNewsChatBotAPI, CovidUpdatesAPI, RegistrationAPI, LoginAPI, SlotCheckAPI, ShopListAPI, shop_list, SlotConfirmAPI
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,7 @@ urlpatterns = [
     path('update/', CovidUpdatesAPI.as_view()),
     path('register/', RegistrationAPI.as_view()),
     path('login/',LoginAPI.as_view()),
+    path('slotCheck/',SlotCheckAPI.as_view()),
+    path('shopList/',ShopListAPI.as_view()),
+    path('confirmSlot/',SlotConfirmAPI.as_view())
 ]

@@ -4,7 +4,7 @@ beautifulsoup4==4.8.2
 bs4==0.0.1
 certifi==2022.12.7
 chardet==3.0.4
-Django==3.1.13
+Django==3.1.14
 django-cors-headers==3.2.1
 djangorestframework==3.11.2
 idna==2.9
